@@ -64,11 +64,11 @@
     <Reference Include="UnityEngine">
       <HintPath>lib\UnityEngine.dll</HintPath>
     </Reference>
-    <Reference Include="LeatherLoader">
-      <HintPath>lib\LeatherLoader.dll</HintPath>
-    </Reference>
     <Reference Include="LitJSON">
       <HintPath>lib\LitJSON.dll</HintPath>
+    </Reference>
+    <Reference Include="LeatherLoader">
+      <HintPath>..\..\LeatherLoader\LeatherLoader\bin\Release\LeatherLoader.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>
