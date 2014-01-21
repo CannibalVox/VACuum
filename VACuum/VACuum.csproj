@@ -41,10 +41,10 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>lib\Assembly-CSharp.dll</HintPath>
+      <HintPath>C:\Users\Stephen\Desktop\RustServer\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>lib\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>C:\Users\Stephen\Desktop\RustServer\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="Facepunch.ID">
       <HintPath>lib\Facepunch.ID.dll</HintPath>
@@ -69,6 +69,9 @@
     </Reference>
     <Reference Include="LeatherLoader">
       <HintPath>..\..\LeatherLoader\LeatherLoader\bin\Release\LeatherLoader.dll</HintPath>
+    </Reference>
+    <Reference Include="Facepunch.ID">
+      <HintPath>lib\Facepunch.ID.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

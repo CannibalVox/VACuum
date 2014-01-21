@@ -8,22 +8,22 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
-using uLink;
 using System.Threading;
 using LitJson;
 using LeatherLoader;
 using System.Text;
 using System.Collections;
 using System.Reflection;
-
+using UnityEngine;
 
 namespace VACuum
 {
 	[Bootstrap]
-	public class VACuumBootstrap : MonoBehaviour
+	public class VACuumBootstrap : MonoBehaviour, IClientConnectListener
 	{
 		internal static Queue Results = new Queue();
 		public DateTime mNextUpdateCheck = DateTime.MaxValue;
+		public bool mDidAddThis = false;
 		
 		public void Awake()
 		{
@@ -31,9 +31,11 @@ namespace VACuum
 			mNextUpdateCheck = DateTime.Now;
 		}
 
-		public void uLink_OnPlayerConnected(uLink.NetworkPlayer player)
+		#region IClientConnectListener implementation
+
+		public void PlayerConnected (PlayerClient player)
 		{
-			NetUser user = (NetUser)player.localData;
+			NetUser user = player.netUser;
 			VACResults result = new VACResults() { DisplayName = user.displayName, SteamId = user.userID };
 			ThreadPool.QueueUserWorkItem((o) =>
 			                             {
@@ -52,12 +54,19 @@ namespace VACuum
 				}
 			});
 		}
-		
+
+		#endregion
+
 		public void Update()
 		{
+			if (!mDidAddThis && ServerManagement.Get () != null) {
+				ServerManagement.AddClientConnectListener (this);
+				mDidAddThis = true;
+			}
+
 			if (DateTime.Now < mNextUpdateCheck)
 				return;
-			
+
 			lock (Results.SyncRoot)
 			{
 				while (Results.Count > 0)
@@ -69,7 +78,7 @@ namespace VACuum
 					if (result.IsBanned)
 					{
 						builder.AppendLine("VACBans.com says player is banned!  Banning...");
-						BanList.Add(result.SteamId);
+						BanList.Add(result.SteamId, result.DisplayName, "Auto-banned by VACuum.");
 						BanList.Save();
 						NetUser user = NetUser.FindByUserID(result.SteamId);
 						
