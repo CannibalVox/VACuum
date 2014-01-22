@@ -58,9 +58,6 @@
     <Reference Include="System">
       <HintPath>lib\System.dll</HintPath>
     </Reference>
-    <Reference Include="uLink">
-      <HintPath>lib\uLink.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>lib\UnityEngine.dll</HintPath>
     </Reference>
@@ -70,8 +67,8 @@
     <Reference Include="LeatherLoader">
       <HintPath>..\..\LeatherLoader\LeatherLoader\bin\Release\LeatherLoader.dll</HintPath>
     </Reference>
-    <Reference Include="Facepunch.ID">
-      <HintPath>lib\Facepunch.ID.dll</HintPath>
+    <Reference Include="uLink">
+      <HintPath>C:\Users\Stephen\Desktop\RustServer\uLink.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

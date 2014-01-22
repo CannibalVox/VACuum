@@ -15,28 +15,60 @@ using System.Text;
 using System.Collections;
 using System.Reflection;
 using UnityEngine;
+using uLink;
 
 namespace VACuum
 {
 	[Bootstrap]
-	public class VACuumBootstrap : MonoBehaviour, IClientConnectListener
+	public class VACuumBootstrap : UnityEngine.MonoBehaviour, INetworkEventHandler
 	{
 		internal static Queue Results = new Queue();
 		public DateTime mNextUpdateCheck = DateTime.MaxValue;
-		public bool mDidAddThis = false;
-		
+		private NetworkEventHandlerRef mHandler;
+
 		public void Awake()
 		{
 			DontDestroyOnLoad(this.gameObject);
+
+			mHandler = uLink.Network.RegisterNetworkEventHandler(this);
+
 			mNextUpdateCheck = DateTime.Now;
 		}
 
-		#region IClientConnectListener implementation
-
-		public void PlayerConnected (PlayerClient player)
+		private void OnDestroy()
 		{
-			NetUser user = player.netUser;
-			VACResults result = new VACResults() { DisplayName = user.displayName, SteamId = user.userID };
+			this.mHandler.Delete ();
+		}
+
+		#region INetworkEventHandler implementation
+
+		public void InitializeNetworkEventHandler ()
+		{
+		}
+
+		public NetworkEventHandlerResponse OnNetworkEvent (string message, object value)
+		{
+			if (string.Equals (message, "uLink_OnPlayerConnected")) {
+				PlayerConnected ((uLink.NetworkPlayer)value);
+				return NetworkEventHandlerResponse.Continue;
+			} else if (string.Equals (message, "uLink_OnPlayerDisconnected")) {
+				PlayerDisconnected ((uLink.NetworkPlayer)value);
+				return NetworkEventHandlerResponse.Continue;
+			}
+
+			return NetworkEventHandlerResponse.Unhandled;
+		}
+
+		public void ShutdownNetworkEventHandler ()
+		{
+		}
+
+		#endregion
+		
+		public void PlayerConnected (uLink.NetworkPlayer player)
+		{
+			SteamConnector user = (SteamConnector)player.localData;
+			VACResults result = new VACResults() { DisplayName = user.Login.SteamLogin.UserName, SteamId = user.Login.SteamLogin.SteamID };
 			ThreadPool.QueueUserWorkItem((o) =>
 			                             {
 				//Query result
@@ -55,15 +87,15 @@ namespace VACuum
 			});
 		}
 
-		#endregion
+		public void PlayerDisconnected(uLink.NetworkPlayer player)
+		{
+			NetUser user = (NetUser)player.localData;
+
+			ConsoleSystem.Log (user.displayName + " disconnected.");
+		}
 
 		public void Update()
 		{
-			if (!mDidAddThis && ServerManagement.Get () != null) {
-				ServerManagement.AddClientConnectListener (this);
-				mDidAddThis = true;
-			}
-
 			if (DateTime.Now < mNextUpdateCheck)
 				return;
 
